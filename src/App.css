@@ -1,0 +1,179 @@
+*{
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+
+}
+header{
+  width: 100%;
+  background-color: green;
+  padding: 20px;
+  margin: 0px;
+  font-size: 20px;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+nav a{
+  text-decoration: none;
+  color: white;
+}
+.home{
+  margin-right: 40%;
+}
+.main-div{
+  display: flex;
+}
+.logout{
+  background-color: green;
+  border: 0px;
+  color: white;
+  margin-left: 100%;
+  font-size: 20px;
+  
+}
+.welcome{
+  margin-right: 20px;  
+}
+button:hover{
+  cursor: pointer;
+}
+table th{
+  font-size: 20px;
+}
+.user{
+  display: flex;
+  margin-left: 200%;
+  color: white;
+}
+.auth{
+  display: flex;
+}
+.auth .register{
+  margin-left: 90%;
+}
+.auth .login{
+  margin-left: 20px;
+}
+nav{
+  display: flex;
+ 
+}
+.error{
+  color: red;
+}
+
+
+.container{
+  width: fit-content;
+  height: 100%;
+  margin-left: 38%;
+  margin-top: 20px;
+  border-radius: 8px;
+}
+.container .head {
+  color: green;
+  text-align: center;
+}
+
+.container .content {
+  border: 2px solid green;
+  width: 320px;
+  height: fit-content;
+  padding: 20px;
+  border-radius: 10px;
+}
+
+.container .content  h3{
+  text-align: center;
+  font-size: 25px;
+  color: green;
+ 
+}
+.container .content .input{
+  width: 300px;
+  height: 30px;
+  border: 2px solid green;
+  border-radius: 8px;
+  margin-top: 8px;
+  margin-bottom: 8px;
+  text-align: center;
+}
+.container .content .form-content label{
+  
+  font-size: 18px;
+}
+.container .content .forget{
+  display: flex;
+ 
+}
+.container .content .forget p input{
+  border: 2px solid green;
+}
+.container .content .forget a{
+  text-decoration: none;
+  color: green;
+  margin-left: 30px;
+}
+.container .content button{
+  width: 305px;
+  height: 33px;
+  border-radius: 8px;
+  background-color: green;
+  color: white;
+  margin-top: 10px;
+}
+.container .content button:hover{
+  background-color: rgb(87, 235, 87);
+  cursor: pointer;
+}
+.container .content .account{
+  padding: 5px;
+}
+.container .content .account a{
+  text-decoration: none;
+  color: green;
+  margin-left: 30px;
+}
+.container .content .validation{
+  width: fit-content;
+  height: fit-content;
+  padding: 3px;
+  border-radius: 6px;
+}
+
+.display{
+ margin-left: 6%;
+  width: fit-content;
+  padding: 20px;
+  border-radius: 10px;
+  text-align: center;
+}
+.update{
+  display: flex;
+}
+.update a, .display table a{
+  border: 2px solid darkgreen;
+  padding: 5px;
+  text-decoration: none;
+  background-color: green;
+  color: white;
+  margin: 10px;
+  border-radius: 10px;
+}
+.update button{
+  border: 2px solid red;
+  padding: 5px;
+  text-decoration: none;
+  background-color: red;
+  color: white;
+  margin: 10px;
+  border-radius: 10px;
+  
+}
+
+.display table{
+  border-collapse: collapse;
+  padding: 20px;
+  
+}
+
+.display table td, th{
+  padding: 20px;
+}
