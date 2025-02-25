@@ -42,7 +42,7 @@ export default function Layout() {
           <div>
           {user ? (
             <div className="user">
-              <span className="welcome">Welcome back {user.name}</span>
+              <span className="welcome">Welcome {user.name}</span>
               <Link to="/create" className="nav-link">
                 New Post
               </Link>
