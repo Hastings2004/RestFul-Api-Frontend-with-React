@@ -16,6 +16,7 @@ export default function Home(){
                 Authorization: `Bearer ${token}`
             }
         });    
+        
         const data = await res.json();
 
         if(res.ok){

@@ -1,4 +1,4 @@
-import { useContext, useState } from "react";
+import { use, useContext, useState } from "react";
 import { AppContext } from "../context/appContext";
 import { useNavigate } from "react-router-dom";
 
@@ -6,12 +6,16 @@ export default function Create(){
     const {token} = useContext(AppContext);
     const navigate = useNavigate();
     
+    const [course, setCourse] = useState([]);
     const [formData, setFormData] = useState({
             level: "",
             course_code: "",
             course_name:"",
         });
+
     const [errors, setErrors] = useState({});
+
+  
 
     async function handleCreate(e) {
         e.preventDefault();
@@ -37,7 +41,9 @@ export default function Create(){
             
         }
         
-    }    
+    } 
+    
+
     return(
             <>
                 <div className="container">
@@ -66,14 +72,13 @@ export default function Create(){
 
                             </div>
                             <div className="form-detail">
-                                <select className="input" id="level"  value={formData.course_code}  onChange={(e) => setFormData({...formData, course_code: e.target.value})} >
-                                    <option value="">--Select Course Code--</option>
+                            
+                               <select name="" className="input"  value={formData.course_code} onChange={(e) => setFormData({...formData, course_code: e.target.value})}>
+                                    <option value="">--select course code---</option>
                                     <option value="BICT3501">BICT3501</option>
                                     <option value="BICT3502">BICT3502</option>
                                     <option value="BICT3503">BICT3503</option>
-                                    <option value="BICT3504">BICT3504</option>
-                                    <option value="BICT3505">BICT3505</option>
-                                </select>
+                               </select>
                                 
                                 {errors.course_code && <p className="error">{errors.course_code[0]}</p>}
 

@@ -44,8 +44,9 @@ export default function Layout() {
             <div className="user">
               <span className="welcome">Welcome {user.name}</span>
               <Link to="/create" className="nav-link">
-                New Post
+                New Course
               </Link>
+             
               <form onSubmit={handleLogout}>
                 <button className="logout">Logout</button>
               </form>

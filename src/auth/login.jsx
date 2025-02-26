@@ -76,15 +76,11 @@ export default function Login(){
                             <button>Login</button>
                         </div>
  
-
                     </div>
                 </form>
 
             </div>
-
-
-        </div>
-            
+        </div>           
             
         </>
         

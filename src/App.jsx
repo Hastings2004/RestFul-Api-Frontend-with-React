@@ -9,6 +9,7 @@ import { AppContext } from './context/appContext';
 import Create from './courses/create';
 import Update from './courses/update';
 import View from './courses/view';
+import Drop from './courses/testings';
 
 export default function App() {
  
@@ -24,6 +25,8 @@ export default function App() {
           <Route path="/login" element={user ? <Home/> : <Login />} />
           <Route path="/register" element={user ? <Home/> : <Register />} />
           <Route path="/create" element={user ? <Create/> : <Login />} />
+          <Route path="/new" element={user ? <Drop/> : <Login />} />
+          
 
           <Route path="/courses/:id" element={<View />} />
 
