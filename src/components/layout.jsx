@@ -11,17 +11,17 @@ export default function Layout() {
 
         e.preventDefault();
 
-        const res = await fetch('/api/logout', {
+        const response = await fetch('/api/logout', {
             method: "post",
             headers:{
                 Authorization: `Bearer ${token}`,
             },
         });
 
-        const data = await res.json();
+        const data = await response.json();
         console.log(data);
 
-        if(res.ok){
+        if(response.ok){
             setUser(null);
             setToken(null);
             localStorage.removeItem("token");
@@ -42,7 +42,7 @@ export default function Layout() {
           <div>
           {user ? (
             <div className="user">
-              <span className="welcome">Welcome {user.name}</span>
+              <span className="welcome">Hi {user.name}!</span>
               <Link to="/create" className="nav-link">
                 New Course
               </Link>

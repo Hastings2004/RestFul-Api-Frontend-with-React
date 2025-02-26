@@ -8,13 +8,13 @@ export default function AppProvider({children}){
     const [user, setUser] = useState(null);
 
     async function getUser() {
-        const res = await fetch("/api/user", {
+        const response = await fetch("/api/user", {
             headers:{
                 Authorization: `Bearer ${token}` ,
             },
         });
         
-        const data = await res.json();
+        const data = await response.json();
 
         if(res.ok){
             setUser(data);

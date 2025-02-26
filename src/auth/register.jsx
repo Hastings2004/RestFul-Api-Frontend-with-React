@@ -20,12 +20,12 @@ export default function Register(){
     async function handleRegistration(e){
         e.preventDefault();
 
-        const res = await fetch("/api/register", {
+        const response = await fetch("/api/register", {
             method: "post",
             body: JSON.stringify(formData),
         });
 
-        const data = await res.json();
+        const data = await response.json();
 
         if(data.errors){
             setErrors(data.errors);
@@ -47,6 +47,7 @@ export default function Register(){
                 <form onSubmit={handleRegistration}>
                     <div className="form-content">
                         <div className="form-detail">
+                            <label htmlFor="name">Full Name</label>
                             <input 
                                 type="text" 
                                 placeholder="name" 
@@ -58,6 +59,7 @@ export default function Register(){
 
                         </div>
                         <div className="form-detail">
+                            <label htmlFor="name">Email</label>
                             <input 
                                 type="email" 
                                  placeholder="email" 
@@ -70,6 +72,7 @@ export default function Register(){
 
                         </div>
                         <div className="form-detail">
+                            <label htmlFor="reg-number">Registration Number</label>
                             <input 
                                 type="text" 
                                 placeholder="reg number" 
@@ -83,6 +86,7 @@ export default function Register(){
 
                         </div>
                         <div className="form-detail">
+                            <label htmlFor="password">Password</label>
                             <input 
                                 type="password" 
                                 placeholder="password" 
@@ -96,6 +100,7 @@ export default function Register(){
 
                         </div>
                         <div className="form-detail">
+                            <label htmlFor="confirm">Confirm Password</label>
                             <input 
                                 type="password" 
                                 placeholder="confirm password" 

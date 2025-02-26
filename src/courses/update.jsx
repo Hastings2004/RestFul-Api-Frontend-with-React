@@ -46,7 +46,7 @@ export default function Update(){
 
         confirm("Are you sure to update ");
        
-        const res = await fetch(`/api/courses/${id}`, {
+        const response = await fetch(`/api/courses/${id}`, {
             method: "put",
             headers: {
                 Authorization: `Bearer ${token}`,
@@ -55,7 +55,7 @@ export default function Update(){
             body: JSON.stringify(formData)
         });
        
-        const data = await res.json();
+        const data = await response.json();
        
 
         if(data.errors){
@@ -83,6 +83,7 @@ export default function Update(){
                     <form onSubmit={handleUpdate}>
                         <div className="form-content">
                             <div className="form-detail">
+                                <label htmlFor="course name">Level</label>
                                 <input 
                                     type="text" 
                                     placeholder="Level" 
@@ -96,6 +97,7 @@ export default function Update(){
 
                             </div>
                             <div className="form-detail">
+                            <label htmlFor="course name">Course Code</label>
                                 <input 
                                     type="text" 
                                     placeholder="Course code" 
@@ -109,6 +111,7 @@ export default function Update(){
 
                             </div>
                             <div className="form-detail">
+                            <label htmlFor="course name">Course Name</label>
                                 <input 
                                     type="text" 
                                     placeholder="Course name" 

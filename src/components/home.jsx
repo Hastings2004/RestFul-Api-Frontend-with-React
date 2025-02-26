@@ -10,14 +10,14 @@ export default function Home(){
 
     
     async function getCourses() {
-        const res = await fetch("/api/courses", {
+        const response = await fetch("/api/courses", {
             method: 'get',
             headers:{
                 Authorization: `Bearer ${token}`
             }
         });    
         
-        const data = await res.json();
+        const data = await response.json();
 
         if(res.ok){
             setCourses(data);

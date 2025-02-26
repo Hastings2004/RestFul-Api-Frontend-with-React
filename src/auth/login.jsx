@@ -19,12 +19,12 @@ export default function Login(){
     async function handleLogin(e){
         e.preventDefault();
 
-        const res = await fetch("/api/login", {
+        const response = await fetch("/api/login", {
             method: "post",
             body: JSON.stringify(formData),
         });
 
-        const data = await res.json();
+        const data = await response.json();
 
         if(data.errors){
             setErrors(data.errors);
@@ -48,6 +48,7 @@ export default function Login(){
                     <div className="form-content">
                         
                         <div className="form-detail">
+                            <label htmlFor="email">Email</label>
                             <input 
                                 type="email" 
                                  placeholder="email" 
@@ -60,6 +61,7 @@ export default function Login(){
 
                         </div>
                         <div className="form-detail">
+                            <label htmlFor="password">Password</label>
                             <input 
                                 type="password" 
                                 placeholder="password" 
@@ -71,6 +73,10 @@ export default function Login(){
                              {errors.password && <p className="error">{errors.password[0]}</p>}
 
 
+                        </div>
+                        <div className="forget">
+                       
+                            <p> <input type="checkbox" /> Remember me <span><a href="">Forget Password?</a></span></p>
                         </div>
                         <div className="form-detail">
                             <button>Login</button>
