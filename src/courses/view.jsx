@@ -23,7 +23,7 @@ export default function View(){
         const data = await response.json();
 
         
-        if(res.ok){
+        if(response.ok){
             setCourses(data.courses);
             //console.log(data.courses);            
         }

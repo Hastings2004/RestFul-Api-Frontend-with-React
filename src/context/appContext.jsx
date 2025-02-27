@@ -16,7 +16,7 @@ export default function AppProvider({children}){
         
         const data = await response.json();
 
-        if(res.ok){
+        if(response.ok){
             setUser(data);
         }
        

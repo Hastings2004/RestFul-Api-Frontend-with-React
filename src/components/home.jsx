@@ -19,7 +19,7 @@ export default function Home(){
         
         const data = await response.json();
 
-        if(res.ok){
+        if(response.ok){
             setCourses(data);
         }
     }
