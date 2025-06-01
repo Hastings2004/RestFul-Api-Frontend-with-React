@@ -196,7 +196,7 @@ export default function ShowProfile() {
     }
 
     return (
-        <center>
+        
         <div className="profile-container">
             <div className="profile-card">
                 <h2 className="profile-title">Your Profile</h2>
@@ -333,6 +333,5 @@ export default function ShowProfile() {
                 )}
             </div>
         </div>
-        </center>
     );
 }
