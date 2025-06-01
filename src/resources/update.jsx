@@ -11,13 +11,13 @@ export default function Update(){
     
     const [formData, setFormData] = useState({
             level: '',
-            course_code: '',
-            course_name:'',
+            resource_code: '',
+            resource_name:'',
         });
     const [errors, setErrors] = useState({});
 
-    async function getCourse() {
-        const res = await fetch(`/api/courses/${id}`,{
+    async function getresource() {
+        const res = await fetch(`/api/resources/${id}`,{
             method: "get",
             headers:{
                 Authorization: `Bearer ${token}`,
@@ -28,14 +28,14 @@ export default function Update(){
         
         if(res.ok){
 
-            if(!data.courses.user_id === user.id){
+            if(!data.resources.user_id === user.id){
                 navigate("/");
             }
             setFormData({
-               // student_id: data.courses.student_id,
-                level: data.courses.level,
-                course_code: data.courses.course_code,
-                course_name: data.courses.course_name,
+               // student_id: data.resources.student_id,
+                level: data.resources.level,
+                resource_code: data.resources.resource_code,
+                resource_name: data.resources.resource_name,
             });
         }
     }
@@ -46,7 +46,7 @@ export default function Update(){
 
         confirm("Are you sure to update ");
        
-        const response = await fetch(`/api/courses/${id}`, {
+        const response = await fetch(`/api/resources/${id}`, {
             method: "put",
             headers: {
                 Authorization: `Bearer ${token}`,
@@ -71,19 +71,19 @@ export default function Update(){
 
     }    
     useEffect(()=>{
-        getCourse();
+        getresource();
     }, [])
     return(
             <>
                 <div className="container">
                 <div className="content">
                     <div>
-                        <h3>Add Course</h3>
+                        <h3>Add resource</h3>
                     </div>
                     <form onSubmit={handleUpdate}>
                         <div className="form-content">
                             <div className="form-detail">
-                                <label htmlFor="course name">Level</label>
+                                <label htmlFor="resource name">Level</label>
                                 <input 
                                     type="text" 
                                     placeholder="Level" 
@@ -97,30 +97,30 @@ export default function Update(){
 
                             </div>
                             <div className="form-detail">
-                            <label htmlFor="course name">Course Code</label>
+                            <label htmlFor="resource name">resource Code</label>
                                 <input 
                                     type="text" 
-                                    placeholder="Course code" 
+                                    placeholder="resource code" 
                                     className="input" 
-                                    value={formData.course_code}
-                                    onChange={(e) => setFormData({...formData, course_code: e.target.value})}
+                                    value={formData.resource_code}
+                                    onChange={(e) => setFormData({...formData, resource_code: e.target.value})}
                             
                                 />
-                                {errors.course_code && <p className="error">{errors.course_code[0]}</p>}
+                                {errors.resource_code && <p className="error">{errors.resource_code[0]}</p>}
 
 
                             </div>
                             <div className="form-detail">
-                            <label htmlFor="course name">Course Name</label>
+                            <label htmlFor="resource name">resource Name</label>
                                 <input 
                                     type="text" 
-                                    placeholder="Course name" 
+                                    placeholder="resource name" 
                                     className="input" 
-                                    value={formData.course_name}
-                                    onChange={(e) => setFormData({...formData, course_name: e.target.value})}
+                                    value={formData.resource_name}
+                                    onChange={(e) => setFormData({...formData, resource_name: e.target.value})}
                             
                                 />
-                                {errors.course_name && <p className="error">{errors.course_name[0]}</p>}
+                                {errors.resource_name && <p className="error">{errors.resource_name[0]}</p>}
 
 
                             </div>

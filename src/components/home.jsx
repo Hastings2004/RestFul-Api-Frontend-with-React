@@ -1,67 +1,62 @@
 import { useCallback, useContext, useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { AppContext } from "../context/appContext";
+import { Bar } from "react-chartjs-2";
 
-export default function Home(){
+export default function Home() {
+    const { token } = useContext(AppContext);
 
-    const {token} = useContext(AppContext);
+    const [resources, setresources] = useState([]);
 
-    const [courses, setCourses] = useState([]);
-
-    
-    async function getCourses() {
-        const response = await fetch("/api/courses", {
+    async function getresources() {
+        const response = await fetch("/api/resources", {
             method: 'get',
-            headers:{
+            headers: {
                 Authorization: `Bearer ${token}`
             }
-        });    
-        
+        });
+
         const data = await response.json();
 
-        if(response.ok){
-            setCourses(data);
+        if (response.ok) {
+            setresources(data);
         }
     }
 
     useEffect(() => {
-        getCourses();
+        getresources();
     }, []);
 
-    return(
+    return (
         <>
-            
-                <div className="display">
-                <h1>Registered courses</h1>
-                <table border="">
-                    <tr>
-                        <th>Student Name</th>
-                        <th>Registration number</th>
-                        <th>Level</th>
-                        <th>Course Code</th>
-                        <th>Course Name</th>
-                        <th>View</th>
-                            
-                    </tr>
-                    
-                        {courses.length > 0 ? courses.map(course =>(
-                            
-                            <tr key={course.id}>
-                                
-                                    <td>{course.user.name}</td>
-                                    <td>{course.user.student_id}</td>        
-                                    <td>{course.level}</td>
-                                    <td>{course.course_code}</td>
-                                    <td>{course.course_name}</td>
-                                    <td><Link to={`/courses/${course.id}`}>show</Link></td>
-                            
-                            </tr>
+            {/* The #content main in your CSS already handles padding and overflow.
+                So, this div just needs to organize the internal elements. */}
+            <div className="home-dashboard-section">
+                <h1>Available Resources</h1>
+                 
+                       
+                        
 
-                        )): <td>No course available</td>}
-                    
-                </table>
+                {resources.length > 0 ? (
+                    <div className="resource-cards-container"> {/* Container for the cards */}
+                        {resources.map(resource => (
+                            <div key={resource.id} className="resource-card"> {/* Individual card */}
+                                <h3 className="resource-title">{resource.name}</h3>
+                                {/* Dynamic class for status */}
+                                <p className="resource-description"><strong>Description:</strong> {resource.description}</p>
+                                <p className="resource-location"><strong>Location:</strong> {resource.location}</p>
+                                <p className="resource-capacity"><strong>Capacity:</strong> {resource.capacity} people</p>
+                                <span className="resource-description">
+                                    Availability status: <span className={resource.status === 'available' ? 'status-available' : 'status-booked'}>{resource.status}</span>
+                                </span>
+                                <Link to={`/resources/${resource.id}`} className="view-details-button">View Details</Link>
+                            </div>
+                        ))}
+                    </div>
+                ) : (
+                    <p className="no-resources-message">No resources available.</p>
+                )}
             </div>
         </>
-        
     );
 }

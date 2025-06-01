@@ -1,42 +1,44 @@
-import { BrowserRouter, Routes, Route }  from 'react-router-dom';
-import './App.css'
+import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import Home from './components/home';
 import Layout from './components/layout';
 import Login from './auth/login';
 import Register from './auth/register';
 import { useContext } from 'react';
 import { AppContext } from './context/appContext';
-import Create from './courses/create';
-import Update from './courses/update';
-import View from './courses/view';
-import Drop from './courses/testings';
-
+import Create from './resources/create';
+import View from './resources/view';
+import MyBookings from './Bookings/showsBookings';
+import ViewBooking from './Bookings/viewBooking';
+import UpdateBooking from './Bookings/updateBooking';
+import ShowProfile from './profile/showProfile';
+import CreateResource from './resources/create';
+import Statistical from './resources/statistical';
+import ResourceSearch from './resources/searchResource';
 export default function App() {
- 
-  const {user} = useContext(AppContext)
-  
+  const { user } = useContext(AppContext);
+
   return (
     <BrowserRouter>
       <Routes>
-
-        <Route path="/" element={<Layout />}>
-          <Route index element={user ? <Home/> : <Login />} />
-
-          <Route path="/login" element={user ? <Home/> : <Login />} />
-          <Route path="/register" element={user ? <Home/> : <Register />} />
-          <Route path="/create" element={user ? <Create/> : <Login />} />
-          <Route path="/new" element={user ? <Drop/> : <Login />} />
+        
+        <Route path="/login" element={user ? <Home /> : <Login />} />
+        <Route path="/register" element={user ? <Home /> : <Register />} />
+        <Route path="/" element={user ? <Layout /> : <Login />}>
           
-
-          <Route path="/courses/:id" element={<View />} />
-
-          <Route path="/courses/update/:id" element={user ? <Update /> : <Login />} />
-
+          <Route index element={user ? <Home /> : <Login />} /> 
+          <Route path="createResource" element={<CreateResource />} />
+          {/*<Route path="new" element={<Drop />} />*/}
+          <Route path="resources/:id" element={<View />} />
+          <Route path="bookings/:id/edit" element={<UpdateBooking />} /> 
+          <Route path='profile' element={<ShowProfile />} />
+          <Route path='statistical' element={<Statistical />}/>
+          <Route path="booking" element={<MyBookings />}/>
+          <Route path="booking/:id" element={<ViewBooking />} />
+          <Route path="search" element={< ResourceSearch />} />
         </Route>
+
+        
       </Routes>
-      
     </BrowserRouter>
   );
 }
-
-
