@@ -50,6 +50,52 @@ body.dark {
     --shadow-medium: rgba(0, 0, 0, 0.3);
 }
 
+/* Base light theme variables */
+:root {
+    --bg-primary: #ffffff; /* Main background color */
+    --bg-secondary: #f9f9f9; /* Secondary background (e.g., component background) */
+    --bg-tertiary: #f2f2f2; /* Even/odd row background */
+    --bg-hover: #e0e0e0; /* Hover background */
+    --border-color: #ddd; /* General border color */
+    --text-primary: #333; /* Main text color */
+    --text-secondary: #555; /* Secondary text color */
+    --header-bg: #4CAF50; /* Table header background */
+    --header-text: white; /* Table header text color */
+    --accent-blue: #2196F3; /* For staff type, etc. */
+    --accent-red: #c62828; /* Error messages */
+    --accent-green: #4CAF50; /* Admin type, loading */
+    --accent-orange: #e65100; /* No users message */
+    --message-bg-info: #e0f7fa;
+    --message-border-info: #b2ebf2;
+    --message-bg-error: #ffebee;
+    --message-border-error: #ef9a9a;
+    --message-bg-warning: #fff3e0;
+    --message-border-warning: #ffcc80;
+}
+
+/* Dark theme variables - apply when data-theme="dark" is present on the body or a parent element */
+body[data-theme="dark"] {
+    --bg-primary: #1a1a1a;
+    --bg-secondary: #2c2c2c;
+    --bg-tertiary: #3a3a3a;
+    --bg-hover: #4a4a4a;
+    --border-color: #555;
+    --text-primary: #e0e0e0;
+    --text-secondary: #b0b0b0;
+    --header-bg: #1e88e5; /* Darker blue for headers in dark mode */
+    --header-text: #e0e0e0;
+    --accent-blue: #64b5f6;
+    --accent-red: #ef5350;
+    --accent-green: #66bb6a;
+    --accent-orange: #ffa726;
+    --message-bg-info: #004d40;
+    --message-border-info: #00796b;
+    --message-bg-error: #b71c1c;
+    --message-border-error: #d32f2f;
+    --message-bg-warning: #ff6f00;
+    --message-border-warning: #ff8f00;
+}
+
 /* Body Styling for Dashboard Layout */
 
 body {
@@ -3257,5 +3303,595 @@ body.dark .error-message {
     }
     .btn {
         width: 100%;
+    }
+}
+
+/*user management*/
+/* UserManagement.css */
+
+
+.user-management {
+    padding: 20px;
+    max-width: 1000px;
+    margin-left: 40px auto;
+    background-color: var(--bg-secondary); /* Use variable */
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Keep shadow fixed, or use a variable if you want it to change */
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    color: var(--text-primary); /* Apply text color variable */
+}
+
+.user-management h1 {
+    text-align: center;
+    color: var(--text-primary); /* Use variable */
+    margin-bottom: 30px;
+    font-size: 2.2em;
+    border-bottom: 2px solid var(--border-color); /* Use variable */
+    padding-bottom: 15px;
+}
+
+.loading-message,
+.error-message,
+.unauthorized-message,
+.no-users-message {
+    text-align: center;
+    padding: 15px;
+    margin: 20px 0;
+    border-radius: 5px;
+    font-size: 1.1em;
+    font-weight: 500;
+}
+
+.loading-message {
+    background-color: var(--message-bg-info); /* Use variable */
+    color: var(--accent-green); /* Consider a specific text color for info */
+    border: 1px solid var(--message-border-info); /* Use variable */
+}
+
+.error-message,
+.unauthorized-message {
+    background-color: var(--message-bg-error); /* Use variable */
+    color: var(--accent-red); /* Use variable */
+    border: 1px solid var(--message-border-error); /* Use variable */
+}
+
+.no-users-message {
+    background-color: var(--message-bg-warning); /* Use variable */
+    color: var(--accent-orange); /* Use variable */
+    border: 1px solid var(--message-border-warning); /* Use variable */
+}
+
+/* Table Styles */
+.users-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+    background-color: var(--bg-primary); /* Use variable */
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05); /* Keep shadow fixed or use a variable */
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.users-table thead {
+    background-color: var(--header-bg); /* Use variable */
+    color: var(--header-text); /* Use variable */
+    text-align: left;
+}
+
+.users-table th,
+.users-table td {
+    padding: 12px 15px;
+    border-bottom: 1px solid var(--border-color); /* Use variable */
+}
+
+.users-table th {
+    font-weight: 600;
+    text-transform: uppercase;
+    font-size: 0.9em;
+    letter-spacing: 0.05em;
+}
+
+.users-table tbody tr:nth-child(even) {
+    background-color: var(--bg-tertiary); /* Use variable for zebra striping */
+}
+
+.users-table tbody tr:hover {
+    background-color: var(--bg-hover); /* Use variable */
+    transition: background-color 0.3s ease;
+}
+
+.users-table td {
+    color: var(--text-secondary); /* Use variable */
+    font-size: 0.95em;
+}
+
+/* Specific styling for User Type tags */
+.user-type-admin {
+    background-color: var(--accent-green); /* Use variable */
+    color: var(--header-text); /* Ensure good contrast, usually white or light gray */
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-weight: bold;
+    font-size: 0.85em;
+    text-transform: capitalize;
+}
+
+.user-type-staff {
+    background-color: var(--accent-blue); /* Use variable */
+    color: var(--header-text);
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-weight: bold;
+    font-size: 0.85em;
+    text-transform: capitalize;
+}
+
+.user-type-student {
+    background-color: var(--accent-orange); /* Use variable */
+    color: var(--text-primary); /* Might need light text for dark mode, or dark text for light mode */
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-weight: bold;
+    font-size: 0.85em;
+    text-transform: capitalize;
+}
+
+/* Responsive adjustments (no changes needed here, as they are layout related) */
+@media (max-width: 768px) {
+    .user-management {
+        padding: 15px;
+        margin: 20px auto;
+    }
+
+    .user-management h1 {
+        font-size: 1.8em;
+    }
+
+    .users-table th,
+    .users-table td {
+        padding: 10px;
+    }
+}
+
+@media (max-width: 600px) {
+    /* Hide some columns on smaller screens */
+    .users-table thead, .users-table tbody {
+        display: block;
+    }
+    .users-table tr {
+        display: flex;
+        flex-wrap: wrap;
+        border-bottom: 1px solid var(--border-color); /* Use variable */
+        margin-bottom: 10px;
+        padding-bottom: 10px;
+    }
+    .users-table th, .users-table td {
+        flex: 1 1 50%;
+        box-sizing: border-box;
+        padding: 5px 10px;
+        text-align: left;
+    }
+    .users-table th:before {
+        content: attr(data-label);
+        font-weight: bold;
+        display: block;
+        color: var(--text-secondary); /* Use variable */
+    }
+    .users-table thead {
+        display: none;
+    }
+    .users-table td:nth-child(1) { order: 1; width: 100%; }
+    .users-table td:nth-child(2) { order: 2; }
+    .users-table td:nth-child(3) { order: 3; }
+    .users-table td:nth-child(4) { order: 4; width: 100%; }
+    .users-table td:nth-child(5) { order: 5; width: 100%; }
+}
+
+/*settings*/
+/* Settings.css */
+
+.settings-container {
+    padding: 20px;
+    max-width: 700px;
+    margin: 40px auto;
+    background-color: var(--bg-secondary); /* Main container background */
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    color: var(--text-primary);
+}
+
+.settings-container h1 {
+    text-align: center;
+    color: var(--text-primary);
+    margin-bottom: 30px;
+    font-size: 2.5em;
+    border-bottom: 2px solid var(--border-color);
+    padding-bottom: 15px;
+}
+
+/* Styles for individual settings cards */
+.settings-section {
+    background-color: var(--bg-primary); /* Card background */
+    padding: 25px; /* Internal padding for the card */
+    margin-bottom: 20px; /* Space between cards */
+    border-radius: 8px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.08); /* Subtle shadow for card depth */
+    border: 1px solid var(--border-color); /* Optional: A thin border for clarity */
+}
+
+/* Remove border from the last card if it was previously there,
+   but with shadows and margins, it's less critical now. */
+.settings-section:last-child {
+    margin-bottom: 0; /* No margin after the last card */
+    border-bottom: none; /* Ensure no residual border if previous implementation had it */
+    padding-bottom: 25px; /* Keep padding consistent with other cards */
+}
+
+
+.settings-section h2 {
+    color: var(--text-primary);
+    font-size: 1.8em;
+    margin-bottom: 20px;
+    border-left: 5px solid var(--header-bg);
+    padding-left: 10px;
+}
+
+.settings-form .form-group {
+    margin-bottom: 15px;
+}
+
+.settings-form label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: 600;
+    color: var(--text-secondary);
+    font-size: 0.95em;
+}
+
+.settings-form input[type="text"],
+.settings-form input[type="email"],
+.settings-form input[type="password"] {
+    width: 100%;
+    padding: 10px 12px;
+    border: 1px solid var(--border-color);
+    border-radius: 5px;
+    background-color: var(--bg-tertiary); /* Use a distinct background for inputs */
+    color: var(--text-primary);
+    font-size: 1em;
+    box-sizing: border-box;
+}
+
+.settings-form input[type="text"]:focus,
+.settings-form input[type="email"]:focus,
+.settings-form input[type="password"]:focus {
+    border-color: var(--header-bg);
+    outline: none;
+    box-shadow: 0 0 0 2px rgba(76, 175, 80, 0.2);
+}
+
+.settings-form button[type="submit"] {
+    display: block;
+    width: 100%;
+    padding: 12px;
+    background-color: var(--header-bg);
+    color: var(--header-text);
+    border: none;
+    border-radius: 5px;
+    font-size: 1.1em;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background-color 0.3s ease, opacity 0.3s ease;
+}
+
+.settings-form button[type="submit"]:hover:not(:disabled) {
+    background-color: #43a047; /* Slightly darker green */
+}
+
+.settings-form button[type="submit"]:disabled {
+    background-color: var(--border-color);
+    cursor: not-allowed;
+    opacity: 0.7;
+}
+
+.success-message {
+    color: var(--accent-green);
+    background-color: var(--message-bg-info);
+    border: 1px solid var(--message-border-info);
+    padding: 10px;
+    margin-bottom: 15px;
+    border-radius: 5px;
+    text-align: center;
+}
+
+.error-message {
+    color: var(--accent-red);
+    background-color: var(--message-bg-error);
+    border: 1px solid var(--message-border-error);
+    padding: 10px;
+    margin-bottom: 15px;
+    border-radius: 5px;
+    text-align: center;
+}
+
+/* Theme Toggle Switch */
+.theme-toggle {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    font-size: 1.1em;
+    color: var(--text-primary);
+}
+
+.switch {
+    position: relative;
+    display: inline-block;
+    width: 60px;
+    height: 34px;
+}
+
+.switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: var(--border-color);
+    transition: .4s;
+    border-radius: 34px;
+}
+
+.slider:before {
+    position: absolute;
+    content: "";
+    height: 26px;
+    width: 26px;
+    left: 4px;
+    bottom: 4px;
+    background-color: var(--bg-primary);
+    transition: .4s;
+    border-radius: 50%;
+}
+
+input:checked + .slider {
+    background-color: var(--header-bg);
+}
+
+input:focus + .slider {
+    box-shadow: 0 0 1px var(--header-bg);
+}
+
+input:checked + .slider:before {
+    transform: translateX(26px);
+}
+
+/* Logout Button */
+.logout-button {
+    display: block;
+    width: 100%;
+    padding: 12px;
+    background-color: var(--accent-red);
+    color: white;
+    border: none;
+    border-radius: 5px;
+    font-size: 1.1em;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.logout-button:hover {
+    background-color: #d32f2f;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .settings-container {
+        padding: 15px;
+        margin: 20px auto;
+    }
+
+    .settings-container h1 {
+        font-size: 2em;
+    }
+
+    .settings-section {
+        padding: 15px; /* Adjust card padding for smaller screens */
+        margin-bottom: 15px; /* Adjust card margin for smaller screens */
+    }
+
+    .settings-section h2 {
+        font-size: 1.5em;
+    }
+}
+
+/* Notifications.css */
+
+.notifications-container {
+    padding: 20px;
+    max-width: 700px;
+    margin: 40px auto;
+    background-color: var(--bg-secondary); /* Main container background */
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    color: var(--text-primary);
+}
+
+.notifications-container h1 {
+    text-align: center;
+    color: var(--text-primary);
+    margin-bottom: 30px;
+    font-size: 2.5em;
+    border-bottom: 2px solid var(--border-color);
+    padding-bottom: 15px;
+}
+
+/* Styles for individual notification preference cards */
+.notification-section {
+    background-color: var(--bg-primary); /* Card background */
+    padding: 25px; /* Internal padding for the card */
+    margin-bottom: 20px; /* Space between cards */
+    border-radius: 8px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.08); /* Subtle shadow for card depth */
+    border: 1px solid var(--border-color); /* Optional: A thin border for clarity */
+}
+
+.notification-section:last-child {
+    margin-bottom: 0;
+}
+
+.notification-section h2 {
+    color: var(--text-primary);
+    font-size: 1.8em;
+    margin-bottom: 20px;
+    border-left: 5px solid var(--header-bg); /* Accent line for section title */
+    padding-left: 10px;
+}
+
+.preference-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 0;
+    border-bottom: 1px dashed var(--border-color); /* Subtle separator */
+    font-size: 1.05em;
+    color: var(--text-secondary);
+}
+
+.preference-item:last-child {
+    border-bottom: none;
+    padding-bottom: 0;
+}
+
+/* Messages */
+.loading-message,
+.error-message,
+.success-message,
+.info-message {
+    text-align: center;
+    padding: 15px;
+    margin: 20px 0;
+    border-radius: 5px;
+    font-size: 1.1em;
+    font-weight: 500;
+}
+
+.loading-message {
+    background-color: var(--message-bg-info);
+    color: var(--accent-green); /* Example: Could use a specific info text color */
+    border: 1px solid var(--message-border-info);
+}
+
+.error-message {
+    background-color: var(--message-bg-error);
+    color: var(--accent-red);
+    border: 1px solid var(--message-border-error);
+}
+
+.success-message {
+    background-color: var(--message-bg-info);
+    color: var(--accent-green);
+    border: 1px solid var(--message-border-info);
+}
+
+.info-message { /* For "Saving changes..." */
+    background-color: var(--message-bg-warning);
+    color: var(--accent-orange);
+    border: 1px solid var(--message-border-warning);
+}
+
+/* Theme Toggle Switch (Reused from Settings.css for consistency) */
+.switch {
+    position: relative;
+    display: inline-block;
+    width: 60px;
+    height: 34px;
+    min-width: 60px; /* Ensure it doesn't shrink */
+}
+
+.switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: var(--border-color);
+    transition: .4s;
+    border-radius: 34px;
+}
+
+.slider:before {
+    position: absolute;
+    content: "";
+    height: 26px;
+    width: 26px;
+    left: 4px;
+    bottom: 4px;
+    background-color: var(--bg-primary); /* Slider thumb background */
+    transition: .4s;
+    border-radius: 50%;
+}
+
+input:checked + .slider {
+    background-color: var(--header-bg);
+}
+
+input:focus + .slider {
+    box-shadow: 0 0 1px var(--header-bg);
+}
+
+input:checked + .slider:before {
+    transform: translateX(26px);
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .notifications-container {
+        padding: 15px;
+        margin: 20px auto;
+    }
+
+    .notifications-container h1 {
+        font-size: 2em;
+    }
+
+    .notification-section {
+        padding: 15px;
+        margin-bottom: 15px;
+    }
+
+    .notification-section h2 {
+        font-size: 1.5em;
+    }
+
+    .preference-item {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 8px;
+        padding: 10px 0;
+    }
+
+    .preference-item span {
+        width: 100%;
+        text-align: left;
+    }
+
+    .preference-item .switch {
+        margin-left: auto; /* Push switch to the right */
     }
 }

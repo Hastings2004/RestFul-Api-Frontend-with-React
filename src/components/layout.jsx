@@ -12,27 +12,34 @@ export default function Layout() {
     return savedMode === 'true' ? true : false;
   });
 
-  async function handleLogout(e) {
-    e.preventDefault();
+  
+  const handleLogout = async () => { 
+      // 1. Ask for Confirmation FIRST
+      if (!window.confirm("Are you sure you want to logout?")) {
+          return; 
+      }
 
-    const response = await fetch("/api/logout", {
-      method: "post",
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    });
+      try {
+          
+          const response = await fetch('/api/logout', {
+              method: 'POST', 
+              headers: {
+                  'Content-Type': 'application/json',
+                  'Authorization': `Bearer ${token}` 
+              }
+          });
 
-    const data = await response.json();
-    console.log(data);
-
-    if (response.ok) {
-      setUser(null);
-      setToken(null);
-      localStorage.removeItem("token");
-      navigate("/");
-    }
-  }
-
+          if (!response.ok) {
+              console.error("Server logout failed:", response.status, await response.text());
+            
+          }
+      } catch (error) {
+          console.error("Network error during server logout:", error);
+          
+      }
+      
+      navigate('/login'); // Redirect to login page or home page
+  };
   const toggleSidebar = () => {
     setIsSidebarOpen(!isSidebarOpen);
   };
@@ -94,12 +101,19 @@ export default function Layout() {
               </NavLink>
             </li>
             {user && user.user_type === 'admin' && ( // Conditional rendering for admin dashboard
-              <li>
+              <><li>
                 <NavLink to="/statistical">
                   <i className="bx bx-chart"></i>
                   <span className="text">Statistical Dashboard</span>
                 </NavLink>
               </li>
+              <li>
+                <NavLink to="/users">
+                   <i className="bx bx-user"></i>
+                  <span className="text">User Management</span>
+                </NavLink>
+              
+              </li></>
             )}
             <li>
               <NavLink to="/profile">
