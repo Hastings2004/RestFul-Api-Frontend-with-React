@@ -2,9 +2,6 @@ import { useCallback, useContext, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { AppContext } from "../context/appContext";
 
-// Optional: Import a CSS file for styling
-// import './ShowProfile.css';
-
 export default function ShowProfile() {
     const { token, user, setUser } = useContext(AppContext);
     const navigate = useNavigate();
@@ -37,7 +34,7 @@ export default function ShowProfile() {
             setError(null);
 
             // Fetch the authenticated user's profile
-            const response = await fetch('/api/user', { 
+            const response = await fetch('/api/profile', { 
                 method: 'GET',
                 headers: {
                     'Content-Type': 'application/json',
