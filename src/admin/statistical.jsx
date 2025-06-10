@@ -151,6 +151,7 @@ export default function Statistical() {
     // --- Render based on User Type ---
     if (user?.user_type === 'admin') {
         return (
+            
             <div className="statistical-dashboard">
                 <h2>Admin Statistical Dashboard</h2>
                 {user?.first_name && <p>Welcome, {user.first_name}!</p>}
