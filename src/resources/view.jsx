@@ -12,12 +12,13 @@ export default function View() {
     const [startTime, setStartTime] = useState("");
     const [endTime, setEndTime] = useState("");
     const [purpose, setPurpose] = useState("");
-    const [bookingType, setBookingType] = useState(""); // New state for booking type
+    const [bookingType, setBookingType] = useState(""); // Corrected state for booking type
     const [priority, setPriority] = useState(""); 
     const [bookingMessage, setBookingMessage] = useState(""); // For success/error messages
     const [validationErrors, setValidationErrors] = useState({}); // New state for backend validation errors
 
     async function getResource() {
+        // console.log("Attempting to fetch resource with ID:", id, "and token:", token); // Added for debugging
         const res = await fetch(`/api/resources/${id}`, {
             method: 'get',
             headers: {
@@ -30,15 +31,16 @@ export default function View() {
             // Adjust based on your resource API response structure
             if (data.resource) {
                 setResource(data.resource);
-            } else if (data.data) {
+            } else if (data.data) { // Keep this for flexibility if API changes
                 setResource(data.data);
-            } else {
+            } else { // Fallback, though data.resource is expected from your backend
                 setResource(data);
             }
+            setBookingMessage(""); // Clear any previous error message on successful fetch
         } else {
             console.error("Failed to fetch resource:", data);
             setResource(null);
-            setBookingMessage("Failed to load resource details.");
+            setBookingMessage(`Failed to load resource details: ${data.message || 'Resource not found or unauthorized.'}`);
         }
     }
 
@@ -62,13 +64,13 @@ async function handleSubmitBooking(e) {
     }
 
     if (!resource) {
-        setBookingMessage("Resource data not loaded yet.");
+        setBookingMessage("Resource data not loaded yet. Please refresh and try again.");
         return;
     }
 
     // Enhanced client-side validation
-    if (!startTime || !endTime || !purpose) {
-        setBookingMessage("Please fill in all booking details (Start Time, End Time, Purpose).");
+    if (!startTime || !endTime || !purpose || !bookingType) { // Added bookingType to required fields
+        setBookingMessage("Please fill in all booking details (Start Time, End Time, Purpose, Booking Type).");
         return;
     }
 
@@ -102,7 +104,11 @@ async function handleSubmitBooking(e) {
             return;
         }
 
-        if (startDate <= new Date()) {
+        // Check if start time is in the past
+        // Use a slight buffer (e.g., 60 seconds) to account for submission time
+        const now = new Date();
+        now.setSeconds(now.getSeconds() - 60); // Allow 60 seconds grace period
+        if (startDate <= now) {
             setBookingMessage("Start time must be in the future.");
             return;
         }
@@ -127,16 +133,16 @@ async function handleSubmitBooking(e) {
         start_time: startDate.toISOString(),
         end_time: endDate.toISOString(),
         purpose: trimmedPurpose,
-        user_type: bookingType, // Use bookingType if set, otherwise default to user's type
+        booking_type: bookingType, // Use bookingType (renamed from user_type for clarity)
     };
 
     // Include priority if user is admin and priority is set
     if (user?.user_type === 'admin' && priority && priority.trim() !== '') {
         const priorityNum = parseInt(priority, 10);
-        if (!isNaN(priorityNum) && priorityNum >= 1 && priorityNum <= 5) {
+        if (!isNaN(priorityNum) && priorityNum >= 1 && priorityNum <= 4) { // Adjusted max to 4 based on previous enum discussions
             bookingData.priority = priorityNum;
         } else {
-            setBookingMessage("Priority must be a number between 1 and 5.");
+            setBookingMessage("Priority must be a number between 1 and 4.");
             return;
         }
     }
@@ -151,7 +157,7 @@ async function handleSubmitBooking(e) {
         const requestOptions = {
             method: "POST",
             headers: {
-                // "Content-Type": "application/json",
+                "Content-Type": "application/json", // Explicitly set content type
                 "Authorization": `Bearer ${token}`,
             },
             body: JSON.stringify(bookingData)
@@ -176,13 +182,12 @@ async function handleSubmitBooking(e) {
         if (contentType && contentType.includes('application/json')) {
             data = await res.json();
         } else {
-            // Handle non-JSON responses
             const textResponse = await res.text();
             console.error('Non-JSON response received:', textResponse);
             
-            // Check if it's an authentication redirect (common cause)
-            if (res.status === 302 || textResponse.includes('login')) {
-                setBookingMessage("Your session has expired. Please log in again.");
+            if (res.status === 302 || textResponse.includes('login') || textResponse.includes('redirect')) {
+                setBookingMessage("Your session has expired or you need to log in. Redirecting to login...");
+                navigate('/login'); // Redirect to login
                 return;
             }
             
@@ -208,9 +213,7 @@ async function handleSubmitBooking(e) {
             setEndTime("");
             setPurpose("");
             setPriority("");
-            
-            // Optional: Refresh bookings list or navigate away
-            // if (onBookingSuccess) onBookingSuccess(data.booking);
+            setBookingType(""); // Reset booking type
             
         } else {
             // Handle different types of errors
@@ -220,11 +223,11 @@ async function handleSubmitBooking(e) {
             switch (res.status) {
                 case 401:
                     setBookingMessage("Your session has expired. Please log in again.");
-                    // Optional: Trigger logout or redirect to login
+                    navigate('/login'); // Redirect to login on 401
                     break;
                     
                 case 403:
-                    setBookingMessage("You don't have permission to perform this action.");
+                    setBookingMessage(data.message || "You don't have permission to perform this action.");
                     break;
                     
                 case 422:
@@ -245,17 +248,17 @@ async function handleSubmitBooking(e) {
                     // Conflict errors
                     if (data.conflicting_bookings && data.conflicting_bookings.length > 0) {
                         const conflictDetails = data.conflicting_bookings
-                            .map(conflict => `${conflict.user} (${conflict.start_time} - ${conflict.end_time})`)
+                            .map(conflict => `${conflict.user_name || 'Unknown User'} (${new Date(conflict.start_time).toLocaleString()} - ${new Date(conflict.end_time).toLocaleString()})`)
                             .join(', ');
-                        setBookingMessage(`${data.message || 'Resource conflict detected.'} Conflicting bookings: ${conflictDetails}`);
+                        setBookingMessage(`${data.message || 'Resource conflict detected.'} Conflicting bookings: ${conflictDetails}.`);
                     } else {
-                        setBookingMessage(data.message || 'Resource conflict detected.');
+                        setBookingMessage(data.message || 'Resource conflict detected (another booking exists in this slot).');
                     }
                     break;
                     
                 case 429:
-                    // Rate limiting
-                    setBookingMessage(data.message || 'You have too many active bookings. Please cancel some existing bookings first.');
+                    // Rate limiting or too many active bookings
+                    setBookingMessage(data.message || 'Too many requests. Please try again later, or you have too many active bookings.');
                     break;
                     
                 case 500:
@@ -299,27 +302,55 @@ async function handleSubmitBooking(e) {
 
         if (!resource) {
             console.warn("Resource data not loaded yet for deletion attempt.");
+            setBookingMessage("Resource data not loaded. Cannot delete.");
             return;
         }
 
-        // Ensure user is authorized for deletion (e.g., resource owner or admin)
-        // This check should primarily be done on the backend, but a frontend check provides immediate feedback.
-        if (user && (user.id === resource.user_id || user.user_type === 'admin')) { // Added admin check
-            const res = await fetch(`/api/resources/${id}`, {
-                method: "delete",
-                headers: {
-                    Authorization: `Bearer ${token}`,
-                },
-            });
+        if (!user) {
+            setBookingMessage("You must be logged in to delete a resource.");
+            return;
+        }
 
-            const data = await res.json();
+        if (!token) {
+            setBookingMessage("Authentication required. Please log in again to delete.");
+            return;
+        }
 
-            if (res.ok) {
-                navigate("/"); // Redirect on successful deletion
-            } else {
-                console.error("Failed to delete resource:", data);
-                // Provide feedback to user if deletion fails
-                setBookingMessage(`Failed to delete resource: ${data.message || 'Unknown error'}`);
+        if (user && (user.id === resource.user_id || user.user_type === 'admin')) {
+            const confirmDelete = window.confirm(`Are you sure you want to delete "${resource.name}"? This action cannot be undone.`);
+            if (!confirmDelete) {
+                return; // User cancelled
+            }
+
+            setBookingMessage("Deleting resource...");
+            try {
+                const res = await fetch(`/api/resources/${id}`, {
+                    method: "DELETE", // Changed to DELETE for clarity
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                    },
+                });
+
+                const contentType = res.headers.get('content-type');
+                let data;
+                if (contentType && contentType.includes('application/json')) {
+                    data = await res.json();
+                } else {
+                    data = { message: await res.text() }; // Get text if not JSON
+                }
+
+                if (res.ok) {
+                    setBookingMessage(data.message || "Resource deleted successfully!");
+                    setTimeout(() => {
+                        navigate("/"); // Redirect on successful deletion after a short delay
+                    }, 1500); // Give user time to read success message
+                } else {
+                    console.error("Failed to delete resource:", data);
+                    setBookingMessage(`Failed to delete resource: ${data.message || 'Unknown error'}`);
+                }
+            } catch (error) {
+                console.error("Network or fetch error during deletion:", error);
+                setBookingMessage(`An error occurred during deletion: ${error.message}`);
             }
         } else {
             console.warn("User not authorized to delete this resource.");
@@ -329,8 +360,15 @@ async function handleSubmitBooking(e) {
 
 
     useEffect(() => {
-        getResource();
-    }, [id, token]); // Re-run when id or token changes
+        // Only attempt to fetch if id and token are available
+        if (id && token) {
+            getResource();
+        } else if (!token) {
+            // Optionally, if no token, indicate login is needed or redirect
+            // setBookingMessage("Please log in to view resource details.");
+            // navigate('/login'); // Uncomment if you want to force login immediately
+        }
+    }, [id, token, navigate]); // Re-run when id, token, or navigate changes
 
     // Helper to format validation error messages
     const displayError = (field) => {
@@ -349,15 +387,12 @@ async function handleSubmitBooking(e) {
                         <p className="single-resource-detail"><strong>Description:</strong> {resource.description}</p>
                         <p className="single-resource-detail"><strong>Location:</strong> {resource.location}</p>
                         <p className="single-resource-detail"><strong>Capacity:</strong> {resource.capacity}</p>
-                        {/* Use resource.is_active if your resource fetch returns it explicitly */}
-                        {/* Otherwise, the status field might indicate availability or not */}
                         <span className="">
                             Availability status: <span className={resource.is_active ? 'status-available' : 'status-booked'}>
                                 {resource.is_active ? 'Available' : 'Unavailable'}
                             </span>
                         </span>
                         
-                        {/* Display delete button only if user is authorized */}
                         {(user && (user.id === resource.user_id || user.user_type === 'admin')) && (
                             <div className="action-buttons">
                                 <Link to={`/resources/edit/${resource.id}`} className="action-button edit-button">Edit Resource</Link>
@@ -393,21 +428,25 @@ async function handleSubmitBooking(e) {
                                         />
                                         {displayError('end_time')}
                                     </div>
-                                    <div className='form-details'>
+                                    {/* Corrected Booking Type Select */}
+                                    <div className='form-group'> {/* Changed to form-group for consistency */}
+                                        <label htmlFor="bookingType">Booking Type:</label> {/* Added label for accessibility */}
                                         <select
-                                            name="user_type"
-                                            id="user_type"
-                                            className={`input ${errors.user_type ? 'input-error' : ''}`}
-                                            value={formData.user_type}
-                                            onChange={handleInputChange}
+                                            name="booking_type" // Changed to booking_type to match backend expectation
+                                            id="bookingType" // Changed id to match label
+                                            className={`form-input ${validationErrors.booking_type ? 'input-error' : ''}`} // Use validationErrors
+                                            value={bookingType} // Use bookingType state
+                                            onChange={(e) => setBookingType(e.target.value)} // Update bookingType state
                                             required
                                         >
                                             <option value="">-------------------Booking type---------------------</option>
-                                            <option value="student">Student</option>
-                                            <option value="staff">Staff</option>
-                                            <option value="guest">Guest</option>
+                                            <option value="university_activity">University Activity</option>
+                                            <option value="staff_meeting">Staff Meeting</option>
+                                            <option value="class">Student Class</option>
+                                            <option value="student_meeting">Student Activity</option>
+                                            <option value="other">Other</option>
                                         </select>
-                                        {errors.user_type && <span className="error">{errors.user_type}</span>}
+                                        {displayError('booking_type')} {/* Changed to booking_type */}
                                     </div>
                                     <div className="form-group">
                                         <label htmlFor="purpose">Purpose of Booking:</label>
@@ -432,7 +471,7 @@ async function handleSubmitBooking(e) {
                                                 value={priority}
                                                 onChange={(e) => setPriority(e.target.value)}
                                                 min="1"
-                                                max="4" // Match your backend Enum values
+                                                max="4" // Match your backend Enum values (assuming 4, not 5)
                                                 className="form-input"
                                                 placeholder="e.g., 1 for Critical"
                                             />
