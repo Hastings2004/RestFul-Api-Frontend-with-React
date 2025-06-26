@@ -14,6 +14,14 @@ export default function UpdateBooking() {
         end_time: '',
         purpose: '',
     });
+
+    const expiredStyle = {
+        color: 'red',
+        fontWeight: 'bold',
+        backgroundColor: '#f8d7da',
+        
+        padding: '10px',
+    };
     const [errors, setErrors] = useState({});
     const [loading, setLoading] = useState(true);
     const [bookingDetails, setBookingDetails] = useState(null); // To store full booking details
@@ -92,7 +100,7 @@ export default function UpdateBooking() {
                     Authorization: `Bearer ${token}`,
                 },
                 body: JSON.stringify({
-                    // Send formatted dates back to the backend
+                    resource_id: formData.resource_id,
                     start_time: moment(formData.start_time).toISOString(),
                     end_time: moment(formData.end_time).toISOString(),
                     purpose: formData.purpose,
@@ -103,7 +111,7 @@ export default function UpdateBooking() {
 
             if (response.ok) {
                 alert(data.message || "Booking updated successfully!");
-                navigate("/bookings"); // Or wherever you list user's bookings
+                navigate("/booking"); // Or wherever you list user's bookings
             } else {
                 if (response.status === 422 && data.errors) {
                     setErrors(data.errors);
@@ -128,8 +136,7 @@ export default function UpdateBooking() {
     }
 
     if (!bookingDetails) {
-        // This case should ideally be caught by the navigate calls inside getBookingDetails
-        // but it's a good fallback for initial render if bookingDetails is null after loading
+        // If bookingDetails is null, it means the fetch failed or booking not found
         return <div className="container"><p>Booking details could not be loaded. Please try again.</p></div>;
     }
 
@@ -139,7 +146,7 @@ export default function UpdateBooking() {
                 <div className="content">
                     <div>
                         {/* Use optional chaining for resource properties as they might be nested */}
-                        <h3>Update Booking for: {bookingDetails.resource?.name || 'Resource Not Found'}</h3>
+                        <h3>Update Booking for {bookingDetails.resource?.name || 'Resource Not Found'}</h3>
                         <p>Current Status: <span className={
                                 bookingDetails.status === 'approved'
                                     ? 'status-approved'
@@ -186,10 +193,14 @@ export default function UpdateBooking() {
                                 ></textarea>
                                 {errors.purpose && <p className="error">{errors.purpose[0]}</p>}
                             </div>
-
-                            <div className="form-detail">
+                            {bookingDetails.status === 'expired' || bookingDetails.status === 'rejected' ? (
+                                <div className="form-detail">
+                                    <p style={expiredStyle}>This booking cannot be updated because it is either expired or rejected.</p>
+                                </div>
+                            ) : <div className="form-detail">
                                 <button type="submit">Update Booking</button>
-                            </div>
+                            </div>}
+                            
                         </div>
                     </form>
                 </div>

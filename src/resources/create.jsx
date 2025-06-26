@@ -3,58 +3,84 @@ import { AppContext } from "../context/appContext";
 import { useNavigate } from "react-router-dom";
 
 export default function CreateResource() {
-    // Access token and user object from AppContext
+    // Access the context to get the token and user information
     const { token, user } = useContext(AppContext);
     const navigate = useNavigate();
 
-    // State for form data, including new resource fields and an image file
     const [formData, setFormData] = useState({
         name: "",
         description: "",
         location: "",
         capacity: "",
-        status: "available", // Default status
-        image: null, // To store the File object
+        category: "",
+        status: "available",
+        image: null,
     });
 
     const [errors, setErrors] = useState({});
-    
     const [message, setMessage] = useState('');
-
+    const [imagePreview, setImagePreview] = useState(null);
     const imageInputRef = useRef(null);
 
     // Effect to check if the user is an admin on component mount
     useEffect(() => {
-        // If user is not available or not an admin, redirect
         if (!user || user.user_type !== 'admin') {
             //alert("Unauthorized access. Only administrators can create resources.");
-            navigate('/'); // Redirect to home or a suitable unauthorized page
+            navigate('/');
         }
-    }, [user, navigate]); 
+    }, [user, navigate]);
 
     // Handle changes for text/select inputs
     const handleChange = (e) => {
         const { name, value } = e.target;
         setFormData({ ...formData, [name]: value });
-        setErrors(prevErrors => ({ ...prevErrors, [name]: undefined })); // Clear specific error on change
-        setMessage(''); // Clear general message on change
+        setErrors(prevErrors => ({ ...prevErrors, [name]: undefined }));
+        setMessage('');
     };
 
     // Handle file input changes
     const handleImageChange = (e) => {
-        const file = e.target.files[0]; // Get the first selected file
+        const file = e.target.files[0];
+        
+        // Validate file type
+        if (file && !file.type.startsWith('image/')) {
+            setErrors(prevErrors => ({ ...prevErrors, image: ['Please select a valid image file.'] }));
+            setMessage('');
+            return;
+        }
+        
+        // Validate file size (max 5MB)
+        if (file && file.size > 5 * 1024 * 1024) {
+            setErrors(prevErrors => ({ ...prevErrors, image: ['Image file size must be less than 5MB.'] }));
+            setMessage('');
+            return;
+        }
+        
         setFormData({ ...formData, image: file });
-        setErrors(prevErrors => ({ ...prevErrors, image: undefined })); // Clear image error
-        setMessage(''); // Clear general message
+        setErrors(prevErrors => ({ ...prevErrors, image: undefined }));
+        setMessage('');
+
+        // Create image preview
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                setImagePreview(e.target.result);
+            };
+            reader.readAsDataURL(file);
+        } else {
+            setImagePreview(null);
+        }
     };
 
     // Handle form submission
     async function handleCreate(e) {
         e.preventDefault();
-        setErrors({}); // Clear previous errors
-        setMessage(''); // Clear previous messages
+        setErrors({});
+        setMessage('');
 
         // Client-side validation (optional, but good for immediate feedback)
+        // This client-side validation is basic. Your backend validation (StoreResourceRequest)
+        // will be the definitive source of truth and more robust.
         if (!formData.name.trim()) {
             setErrors({ name: ['Resource name is required.'] });
             return;
@@ -71,67 +97,85 @@ export default function CreateResource() {
             setErrors({ capacity: ['Capacity must be a positive number.'] });
             return;
         }
+        if (!formData.category) {
+            setErrors({ category: ['Category is required.'] });
+            return;
+        }
         if (!formData.status) {
             setErrors({ status: ['Status is required.'] });
             return;
         }
-        // Image is optional, so no required validation here unless you want to make it mandatory
 
-        // Create FormData object for sending multipart/form-data (required for file uploads)
         const dataToSend = new FormData();
+
         dataToSend.append('name', formData.name);
         dataToSend.append('description', formData.description);
         dataToSend.append('location', formData.location);
         dataToSend.append('capacity', formData.capacity);
+        dataToSend.append('category', formData.category);
         dataToSend.append('status', formData.status);
-        if (formData.image) { 
+
+        if (formData.image) {
             dataToSend.append('image', formData.image);
         }
 
+        // Log the FormData contents for debugging
+        console.log("FormData contents being sent:");
+        for (let pair of dataToSend.entries()) {
+            console.log(pair[0] + ': ' + pair[1]);
+        }
+
         try {
-            const response = await fetch("/api/resources", { 
-                method: "POST", // Use POST for creation
+            const response = await fetch("/api/resources", {
+                method: "POST",
                 headers: {
                     Authorization: `Bearer ${token}`,
+                    // REMOVE THE 'Content-Type': 'application/json' HEADER!
+                    // The browser will automatically set 'multipart/form-data'
                 },
-                body: dataToSend, 
+                body: dataToSend, // **CORRECTION: Send dataToSend, not formData**
             });
 
             const data = await response.json();
 
             if (response.ok) {
                 setMessage(data.message || "Resource created successfully!");
-                // Clear the form after successful creation
+                // Optionally clear the form after success
                 setFormData({
                     name: "",
                     description: "",
                     location: "",
                     capacity: "",
+                    category: "",
                     status: "available",
                     image: null,
                 });
-                // Clear the file input visually
                 if (imageInputRef.current) {
-                    imageInputRef.current.value = "";
+                    imageInputRef.current.value = ""; // Clear file input
                 }
-                navigate("/"); // Navigate to home or resource list page
+                setImagePreview(null); // Clear image preview
+                setErrors({});
+                // Navigate after a short delay to allow message to be seen
+                setTimeout(() => navigate("/"), 2000);
             } else {
                 if (response.status === 422 && data.errors) {
-                    setErrors(data.errors); // Set backend validation errors
+                    setErrors(data.errors);
                     setMessage(data.message || "Please correct the form errors.");
                 } else {
                     setMessage(data.message || "Failed to create resource. Please try again.");
                 }
-                console.error("API Error:", data);
+                console.error("API Error (backend response data):", data); // Log the full error from backend
             }
         } catch (error) {
             setMessage("An unexpected error occurred. Please check your network and try again.");
-            console.error("Network Error:", error);
+            console.error("Network Error (during fetch):", error);
         }
     }
 
+    // This check should be placed after the imports and before the return statement
+    // so that the component doesn't render if unauthorized.
     if (!user || user.user_type !== 'admin') {
-        return null; // Or a simple "Access Denied" message
+        return null;
     }
 
     return (
@@ -208,25 +252,26 @@ export default function CreateResource() {
                                 />
                                 {errors.capacity && <p className="error-text">{errors.capacity[0]}</p>}
                             </div>
-
-                            {/* Status */}
                             <div className="form-detail">
-                                <label htmlFor="status">Status</label>
+                                <label htmlFor="category">Category:</label>
                                 <select
-                                    id="status"
-                                    name="status"
-                                    className={`input ${errors.status ? 'input-error' : ''}`}
-                                    value={formData.status}
+                                    id="category"
+                                    name="category"
+                                    value={formData.category}
                                     onChange={handleChange}
+                                    className={`form-input ${errors.category ? 'input-error' : ''}`}
                                 >
-                                    <option value="available">Available</option>
-                                    <option value="booked">Booked</option>
-                                    <option value="maintenance">Under Maintenance</option>
-                                    <option value="unavailable">Unavailable</option>
+                                    <option value="">Select a category</option>
+                                    <option value="classrooms">Classrooms</option>
+                                    <option value="ict_labs">ICT Labs</option>
+                                    <option value="science_labs">Science Labs</option>
+                                    <option value="auditorium">Auditorium</option>
+                                    <option value="sports">Sports</option>
+                                    <option value="cars">Cars</option>
                                 </select>
-                                {errors.status && <p className="error-text">{errors.status[0]}</p>}
+                                {errors.category && <p className="error-message">{errors.category[0]}</p>}
                             </div>
-
+                            
                             {/* Image Upload */}
                             <div className="form-detail">
                                 <label htmlFor="image">Resource Image (Optional)</label>
@@ -235,11 +280,36 @@ export default function CreateResource() {
                                     id="image"
                                     name="image"
                                     accept="image/*" // Only allow image files
-                                    className={`input-file ${errors.image ? 'input-error' : ''}`}
+                                    className={`input ${errors.image ? 'input-error' : ''}`}
                                     onChange={handleImageChange}
                                     ref={imageInputRef} // Attach ref to clear input
                                 />
+                                <p className="help-text">Supported formats: JPG, PNG, GIF. Maximum size: 5MB</p>
                                 {errors.image && <p className="error-text">{errors.image[0]}</p>}
+                                
+                                {/* Image Preview */}
+                                {imagePreview && (
+                                    <div className="image-preview-container">
+                                        <img 
+                                            src={imagePreview} 
+                                            alt="Resource preview" 
+                                            className="image-preview"
+                                        />
+                                        <button 
+                                            type="button" 
+                                            className="remove-image-btn"
+                                            onClick={() => {
+                                                setFormData({ ...formData, image: null });
+                                                setImagePreview(null);
+                                                if (imageInputRef.current) {
+                                                    imageInputRef.current.value = "";
+                                                }
+                                            }}
+                                        >
+                                            Remove Image
+                                        </button>
+                                    </div>
+                                )}
                             </div>
 
                             {/* Submit Button */}
