@@ -269,8 +269,8 @@ export default function MyBookings() {
                 
                 setMessage("Document downloaded successfully!");
             } else if (res.status === 404) {
-                // API endpoint doesn't exist yet - show fallback message
-                setMessage("Document download feature is not yet available. Please contact the administrator.");
+                
+                setMessage("An known error occur");
                 console.warn("Document download API endpoint not implemented yet");
             } else {
                 const data = await res.json();
@@ -283,7 +283,7 @@ export default function MyBookings() {
         }
     };
 
-    // --- NEW FUNCTION FOR HANDLING DOCUMENT VIEWING ---
+   
     const handleDocumentView = async (bookingId, event) => {
         event.preventDefault();
         
@@ -293,7 +293,7 @@ export default function MyBookings() {
         }
 
         try {
-            // First, try to fetch the document with authentication
+            
             const res = await fetch(`/api/bookings/${bookingId}/document`, {
                 method: 'GET',
                 headers: {
@@ -303,23 +303,17 @@ export default function MyBookings() {
             });
 
             if (res.ok) {
-                // Get the blob from the response
                 const blob = await res.blob();
                 
-                // Create a URL for the blob
-                const url = window.URL.createObjectURL(blob);
+                const url = window.URL.createObjectURL(blob);               
+                window.open(url, '_blank');                
                 
-                // Open in new tab
-                window.open(url, '_blank');
-                
-                // Clean up the URL after a delay
                 setTimeout(() => {
                     window.URL.revokeObjectURL(url);
                 }, 1000);
                 
             } else if (res.status === 404) {
-                // API endpoint doesn't exist yet - show fallback message
-                setMessage("Document view feature is not yet available. Please contact the administrator.");
+                setMessage("An known error ");
                 console.warn("Document view API endpoint not implemented yet");
             } else if (res.status === 401) {
                 setMessage("Authentication failed. Please log in again.");

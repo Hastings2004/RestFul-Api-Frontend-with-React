@@ -94,8 +94,8 @@ export default function UpdateBooking() {
         setErrors({}); // Clear previous errors
 
         try {
-            const response = await fetch(`/api/bookings/${id}`, { // Target the booking endpoint
-                method: "PUT", // Use PUT for updates
+            const response = await fetch(`/api/bookings/${id}`, { 
+                method: "PUT", 
                 headers: {
                     Authorization: `Bearer ${token}`,
                 },
@@ -111,14 +111,14 @@ export default function UpdateBooking() {
 
             if (response.ok) {
                 alert(data.message || "Booking updated successfully!");
-                navigate("/booking"); // Or wherever you list user's bookings
+                navigate("/booking"); 
             } else {
                 if (response.status === 422 && data.errors) {
                     setErrors(data.errors);
-                    console.log("Validation errors:", data.errors); // Debugging: log validation errors
+                    console.log("Validation errors:", data.errors); 
                 } else {
                     alert(data.message || "Failed to update booking. Please try again.");
-                    console.error("Update API error:", data); // Debugging: log update API errors
+                    console.error("Update API error:", data); 
                 }
             }
         } catch (error) {
